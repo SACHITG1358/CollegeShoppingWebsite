@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+
+    <title>E-SHOP | NIT JAMSHEDPUR</title>
+  </head>
+  <body>
+
+
+    <header class="p-3  border-bottom">
+        <div class="container">
+          <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none">
+              <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><img src="/images/logo.png"  width="150"/></svg>
+            </a>
+
+            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+              <li><a href="/" class="nav-link px-4 link-dark">Home</a></li>
+              <li><a href="/working" class="nav-link px-4 link-dark">How it works?</a></li>
+            </ul>
+
+
+            <a href="/add"><button type="button" class="btn btn-danger me-2">Add products</button></a>
+
+
+            <div class="dropdown text-end">
+              <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                <button type="button" class="btn btn-outline-dark me-2"><%=user.name%></button>
+              </a>
+              <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
+                <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="/logout">Log out</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </header>
+
+
+
+    	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    		<div class="container px-5">
+    			<ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+            <li><a href="/category/All" class="nav-link px-3 link-dark">All products</a></li>
+    				<li><a href="/category/Books" class="nav-link px-3 link-dark">Books and Novels</a></li>
+    				<li><a href="/category/Stationery" class="nav-link px-3 link-dark">Stationery</a></li>
+    				<li><a href="/category/Electronics" class="nav-link px-3 link-dark">Electronics and Appliances</a></li>
+    				<li><a href="/category/Other" class="nav-link px-3 link-dark">Others</a></li>
+    			</ul>
+    		</div>
+    </nav>

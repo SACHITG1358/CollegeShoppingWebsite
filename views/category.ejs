@@ -1,0 +1,41 @@
+<%-include("partials/header")%>
+
+<%for(let i=product.length-1;i>=0;i--) {%>
+  <div class="container py-4 px-5">
+     <table class="table">
+     <tbody>
+       <tr>
+         <td style="width: 30%"><img src="<%=product[i].image%>" alt="product iamge" height="220px"></td>
+         <td style="width: 70%">
+           <table class="table">
+    <tbody>
+      <tr>
+        <td style="width: 50%">Name</td>
+        <td style="width: 50%"><%=product[i].name%></td>
+      </tr>
+      <tr>
+        <td>Price</td>
+        <td><%=product[i].price%></td>
+      </tr>
+      <tr>
+        <td>Description</td>
+        <td><%=product[i].description%></td>
+      </tr>
+      <tr>
+        <td>Type</td>
+        <td><%=product[i].type%></td>
+      </tr>
+      <tr>
+        <td>Seller</td>
+        <td><a href="/seller/<%=product[i].seller%>"><%=product[i].sellerName%></a></td>
+      </tr>
+    </tbody>
+  </table>
+         </td>
+       </tr>
+     </tbody>
+   </table>
+   </div>
+<%}%>
+
+<%-include("partials/footer")%>

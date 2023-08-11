@@ -1,0 +1,57 @@
+<%-include("partials/header")%>
+
+<div class="container py-5 px-5">
+  <form action="/add" method="post" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label for="image" class="form-label">Upload image (File type should be jpg,jpeg or png)</label>
+      <input type="file" class="form-control" id="image" required name="image">
+    </div>
+    <div class="mb-3">
+      <label for="name" class="form-label">Name</label>
+      <input type="text" class="form-control" id="name" required name="name">
+    </div>
+    <div class="mb-3">
+      <label for="price" class="form-label">Price</label>
+      <input type="text" class="form-control" id="price" required name="price">
+    </div>
+    <div class="mb-3">
+      <label for="exampleFormControlTextarea1">Description</label>
+      <textarea class="form-control" id="exampleFormControlTextarea1" rows="4" required name="description"></textarea>
+    </div>
+    <div class="mb-3">
+      <label for="checkbox">Select type</label>
+
+
+      <div class="form-check" id="checkbox">
+        <input class="form-check-input" type="radio" name="radio" id="exampleRadios1" value="Books" checked>
+        <label class="form-check-label" for="exampleRadios1">
+          Books and Novels
+        </label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="radio" id="exampleRadios2" value="Stationery">
+        <label class="form-check-label" for="exampleRadios2">
+          Stationery
+        </label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="radio" id="exampleRadios3" value="Electronics">
+        <label class="form-check-label" for="exampleRadios2">
+          Electronics and Appliances
+        </label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="radio" id="exampleRadios3" value="Other">
+        <label class="form-check-label" for="exampleRadios2">
+          Other
+        </label>
+      </div>
+
+
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+
+
+<%-include("partials/footer")%>

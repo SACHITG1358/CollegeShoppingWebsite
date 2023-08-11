@@ -1,0 +1,64 @@
+<%-include("partials/header")%>
+
+<div class="container py-4 px-5">
+  <table class="table">
+  <tbody>
+    <tr>
+      <td style="width: 50%">Name</td>
+      <td style="width: 50%"><%=seller.name%></td>
+    </tr>
+    <tr>
+      <td>Email</td>
+      <td><%=seller.email%></td>
+    </tr>
+    <tr>
+      <td>Contact no</td>
+      <td><%=seller.contact%></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="container px-5">
+  <p class="lead">Other products by this seller :-</p>
+</div>
+
+<%for(let i=0;i<product.length;i++) {%>
+  <div class="container py-4 px-5">
+     <table class="table">
+     <tbody>
+       <tr>
+         <td style="width: 30%"><img src="<%=product[i].image%>" alt="product iamge" height="220px"></td>
+         <td style="width: 70%">
+           <table class="table">
+    <tbody>
+      <tr>
+        <td style="width: 50%">Name</td>
+        <td style="width: 50%"><%=product[i].name%></td>
+      </tr>
+      <tr>
+        <td>Price</td>
+        <td><%=product[i].price%></td>
+      </tr>
+      <tr>
+        <td>Description</td>
+        <td><%=product[i].description%></td>
+      </tr>
+      <tr>
+        <td>Type</td>
+        <td><%=product[i].type%></td>
+      </tr>
+      <tr>
+        <td>Seller</td>
+        <td><a href="/seller/<%=product[i].seller%>"><%=product[i].sellerName%></a></td>
+      </tr>
+    </tbody>
+  </table>
+         </td>
+       </tr>
+     </tbody>
+   </table>
+   </div>
+<%}%>
+
+<%-include("partials/footer")%>

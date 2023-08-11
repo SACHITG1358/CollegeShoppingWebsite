@@ -1,0 +1,21 @@
+<%-include("partials/header")%>
+
+<div class="container py-5 px-5">
+  <form action="/edit" method="post">
+    <div class="mb-3">
+      <label for="name" class="form-label">Name</label>
+      <input type="text" class="form-control" id="name" required name="name" value="<%=user.name%>">
+    </div>
+    <div class="mb-3">
+      <label for="price" class="form-label">Email</label>
+      <input type="text" class="form-control" id="price" required name="email" value="<%=user.email%>">
+    </div>
+    <div class="mb-3">
+      <label for="price" class="form-label">Contact no</label>
+      <input type="text" class="form-control" id="price" required name="contact" value="<%=user.contact%>">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+
+<%-include("partials/footer")%>
