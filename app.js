@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const passport = require("passport");
 const passportLocalMongoose = require("passport-local-mongoose");
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
+//const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const findOrCreate = require("mongoose-findorcreate");
 const cloudinary = require("./utils/cloudinary");
 const upload = require("./utils/multer");
@@ -72,27 +72,27 @@ passport.deserializeUser(function(id, done) {
   });
 });
 
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: process.env.CLIENT_ID,
-      clientSecret: process.env.CLIENT_SECRET,
-      callbackURL: "https://cryptic-plains-20900.herokuapp.com/auth/google/home",
-      userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
-    },
-    function(accessToken, refreshToken, profile, cb) {
-      //console.log(profile);
-      //console.log(profile.photos[0].value);
-      User.findOrCreate(
-        { googleId: profile.id },
-        { name: profile.displayName,email:profile.emails[0].value},
-        function(err, user) {
-          return cb(err, user);
-        }
-      );
-    }
-  )
-);
+// passport.use(
+//   new GoogleStrategy(
+//     {
+//       clientID: process.env.CLIENT_ID,
+//       clientSecret: process.env.CLIENT_SECRET,
+//       callbackURL: "https://cryptic-plains-20900.herokuapp.com/auth/google/home",
+//       userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
+//     },
+//     function(accessToken, refreshToken, profile, cb) {
+//       //console.log(profile);
+//       //console.log(profile.photos[0].value);
+//       User.findOrCreate(
+//         { googleId: profile.id },
+//         { name: profile.displayName,email:profile.emails[0].value},
+//         function(err, user) {
+//           return cb(err, user);
+//         }
+//       );
+//     }
+//   )
+// );
 
 
 app.get("/auth/google",
@@ -331,7 +331,7 @@ app.post("/edit",function(req,res){
   });
   res.redirect("/profile");
 });
-
-app.listen(process.env.PORT || 3000,function(){
-  console.log("server is listening to port 3000.");
+const PORT=process.env.PORT || 3000;
+app.listen(PORT,function(){
+  console.log(`server is listening to port ${PORT}`);
 });
