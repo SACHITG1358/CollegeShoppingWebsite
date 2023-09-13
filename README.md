@@ -29,4 +29,4 @@ Our website provides a common platform for the sellers and the buyers where the 
 
  **BACKEND**: Node.js, Express, mongoDB
 
- **APIs** : Cloudinary, Google OAuth 2.0
+ **APIs** : Cloudinary
