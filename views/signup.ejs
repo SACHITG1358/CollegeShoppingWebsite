@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.87.0">
-
+    <link rel="icon" type="image/png" href="/images/icon.png">
     <title>Login</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/sign-in/">
@@ -41,20 +41,24 @@
 
     <div class="form-floating">
       <input type="text" class="form-control" id="floatingName" placeholder="Name" name="fullname" required>
-      <label for="floatingName">Name</label>
+      <label for="floatingName">Name*</label>
+    </div>
+    <div class="form-floating">
+      <input type="text" class="form-control" id="floatingContact" placeholder="Contact" name="contact">
+      <label for="floatingContact">Contact</label>
     </div>
     <div class="form-floating">
       <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" name="username" required>
-      <label for="floatingInput">Email address</label>
+      <label for="floatingInput">Email address*</label>
     </div>
     <div class="form-floating">
       <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password" required>
-      <label for="floatingPassword">Password</label>
+      <label for="floatingPassword">Password*</label>
     </div>
     <button class="w-100 btn btn-lg btn-success" type="submit">Create Account</button>
     <h1 class="lead py-1">OR</h1>
   </form>
-  <!-- <div class="col-sm-4 w-100">
+  <div class="col-sm-4 w-100">
     <div class="card">
       <div class="card-body">
         <a class="btn btn-block" href="/auth/google" role="button">
@@ -62,7 +66,7 @@
         </a>
       </div>
     </div>
-  </div> -->
+  </div>
   <p class="lead py-3">Already registerd? <a href="/login">Login</a> here.</p>
 </main>
 

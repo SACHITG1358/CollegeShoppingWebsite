@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const passport = require("passport");
 const passportLocalMongoose = require("passport-local-mongoose");
-// const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const findOrCreate = require("mongoose-findorcreate");
 const cloudinary = require("./utils/cloudinary");
 const upload = require("./utils/multer");
@@ -86,44 +86,44 @@ passport.deserializeUser(function (id, done) {
   });
 });
 
-// passport.use(
-//   new GoogleStrategy(
-//     {
-//       clientID: process.env.CLIENT_ID,
-//       clientSecret: process.env.CLIENT_SECRET,
-//       callbackURL: "/auth/google/home",
-//     },
-//     function (accessToken, refreshToken, profile, cb) {
-//       //console.log(profile);
-//       //console.log(profile.photos[0].value);
-//       User.findOrCreate(
-//         { googleId: profile.id },
-//         {
-//           name: profile.displayName,
-//           email: profile.emails[0].value,
-//           username: profile.emails[0].value,
-//         },
-//         function (err, user) {
-//           return cb(err, user);
-//         }
-//       );
-//     }
-//   )
-// );
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.CLIENT_ID,
+      clientSecret: process.env.CLIENT_SECRET,
+      callbackURL: "/auth/google/home",
+    },
+    function (accessToken, refreshToken, profile, cb) {
+      //console.log(profile);
+      //console.log(profile.photos[0].value);
+      User.findOrCreate(
+        { googleId: profile.id },
+        {
+          name: profile.displayName,
+          email: profile.emails[0].value,
+          username: profile.emails[0].value,
+        },
+        function (err, user) {
+          return cb(err, user);
+        }
+      );
+    }
+  )
+);
 
-// app.get(
-//   "/auth/google",
-//   passport.authenticate("google", { scope: ["profile", "email"] })
-// );
+app.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
 
-// app.get(
-//   "/auth/google/home",
-//   passport.authenticate("google", { failureRedirect: "/login" }),
-//   function (req, res) {
-//     // Successful authentication, redirect home.
-//     res.redirect("/home");
-//   }
-// );
+app.get(
+  "/auth/google/home",
+  passport.authenticate("google", { failureRedirect: "/login" }),
+  function (req, res) {
+    // Successful authentication, redirect home.
+    res.redirect("/home");
+  }
+);
 
 app.get("/login", function (req, res) {
   res.render("login");
