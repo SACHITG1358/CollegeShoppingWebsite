@@ -66,6 +66,7 @@ const userSchema = new mongoose.Schema({
   contact: String,
   googleId: String,
   username: String,
+  role: { type: String, default: "customer" },
 });
 
 userSchema.plugin(passportLocalMongoose);
@@ -94,17 +95,39 @@ passport.use(
       callbackURL: "/auth/google/home",
     },
     function (accessToken, refreshToken, profile, cb) {
-      //console.log(profile);
-      //console.log(profile.photos[0].value);
-      User.findOrCreate(
-        { googleId: profile.id },
+      const email = profile.emails && profile.emails[0] ? profile.emails[0].value : "";
+
+      User.findOne(
         {
-          name: profile.displayName,
-          email: profile.emails[0].value,
-          username: profile.emails[0].value,
+          $or: [{ googleId: profile.id }, { username: email }, { email: email }],
         },
         function (err, user) {
-          return cb(err, user);
+          if (err) return cb(err);
+
+          if (user) {
+            user.googleId = user.googleId || profile.id;
+            user.name = user.name || profile.displayName;
+            user.email = user.email || email;
+            user.username = user.username || email;
+            user.save(function (saveErr) {
+              if (saveErr) return cb(saveErr);
+              return cb(null, user);
+            });
+            return;
+          }
+
+          const newUser = new User({
+            googleId: profile.id,
+            name: profile.displayName,
+            email: email,
+            username: email,
+            role: "customer",
+          });
+
+          newUser.save(function (saveErr) {
+            if (saveErr) return cb(saveErr);
+            return cb(null, newUser);
+          });
         }
       );
     }
@@ -167,7 +190,11 @@ app.get("/about", function (req, res) {
 
 app.get("/add", function (req, res) {
   if (req.isAuthenticated()) {
-    res.render("add", { user: req.user });
+    res.render("add", {
+      user: req.user,
+      message: req.query.message,
+      error: req.query.error,
+    });
   } else {
     res.redirect("/login");
   }
@@ -178,7 +205,12 @@ app.get("/profile", function (req, res) {
     Product.find({ seller: req.user._id }, function (err, foundProducts) {
       if (err) console.log(err);
       else {
-        res.render("profile", { user: req.user, product: foundProducts });
+        res.render("profile", {
+          user: req.user,
+          product: foundProducts,
+          message: req.query.message,
+          error: req.query.error,
+        });
       }
     });
   } else {
@@ -189,7 +221,13 @@ app.get("/profile", function (req, res) {
 app.get("/category/:type", function (req, res) {
   if (req.isAuthenticated()) {
     const type = req.params.type;
-    if (type === "All") {
+    const categoryMap = {
+      Books: "Books and Novels",
+      Electronics: "Electronics Appliances",
+    };
+    const queryType = categoryMap[type] || type;
+
+    if (queryType === "All") {
       Product.find({}, function (err, foundProducts) {
         if (err) console.log(err);
         else {
@@ -197,7 +235,7 @@ app.get("/category/:type", function (req, res) {
         }
       });
     } else {
-      Product.find({ type: type }, function (err, foundProducts) {
+      Product.find({ type: queryType }, function (err, foundProducts) {
         if (err) console.log(err);
         else {
           res.render("category", { user: req.user, product: foundProducts });
@@ -233,15 +271,113 @@ app.get("/seller/:sellerId", function (req, res) {
   }
 });
 
-app.get("/delete/:productId", async function (req, res) {
-  try {
-    const foundproduct = await Product.findById(req.params.productId);
-    await cloudinary.uploader.destroy(foundproduct.cloudinary_id);
+app.delete("/delete/:productId", async function (req, res) {
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ message: "Please log in first." });
+  }
 
-    await foundproduct.remove();
-    res.redirect("/profile");
+  try {
+    const foundProduct = await Product.findById(req.params.productId);
+
+    if (!foundProduct) {
+      return res.status(404).json({ message: "Product not found." });
+    }
+
+    const currentUserId = req.user._id.toString();
+    const productSellerIds = Array.isArray(foundProduct.seller)
+      ? foundProduct.seller.map((id) => id.toString())
+      : [foundProduct.seller?.toString()];
+
+    const isOwner = productSellerIds.includes(currentUserId);
+
+    if (!isOwner) {
+      return res.status(403).json({ message: "Only the seller who added this product can delete it." });
+    }
+
+    if (foundProduct.cloudinary_id) {
+      await cloudinary.uploader.destroy(foundProduct.cloudinary_id);
+    }
+
+    await Product.findByIdAndDelete(req.params.productId);
+    res.json({ success: true, message: "Product deleted successfully." });
   } catch (err) {
     console.log(err);
+    res.status(500).json({ message: "Unable to delete product." });
+  }
+});
+
+app.get("/edit/:productId", async function (req, res) {
+  if (!req.isAuthenticated()) {
+    return res.redirect("/login");
+  }
+
+  try {
+    const foundProduct = await Product.findById(req.params.productId);
+
+    if (!foundProduct) {
+      return res.redirect("/profile?error=Product not found.");
+    }
+
+    const currentUserId = req.user._id.toString();
+    const productSellerIds = Array.isArray(foundProduct.seller)
+      ? foundProduct.seller.map((id) => id.toString())
+      : [foundProduct.seller?.toString()];
+
+    if (!productSellerIds.includes(currentUserId)) {
+      return res.redirect("/profile?error=You can edit only your own products.");
+    }
+
+    res.render("edit", {
+      user: req.user,
+      product: foundProduct,
+      message: req.query.message,
+      error: req.query.error,
+    });
+  } catch (err) {
+    console.log(err);
+    res.redirect("/profile?error=Unable to load product for editing.");
+  }
+});
+
+app.post("/edit/:productId", async function (req, res) {
+  if (!req.isAuthenticated()) {
+    return res.redirect("/login");
+  }
+
+  try {
+    const foundProduct = await Product.findById(req.params.productId);
+
+    if (!foundProduct) {
+      return res.redirect("/profile?error=Product not found.");
+    }
+
+    const currentUserId = req.user._id.toString();
+    const productSellerIds = Array.isArray(foundProduct.seller)
+      ? foundProduct.seller.map((id) => id.toString())
+      : [foundProduct.seller?.toString()];
+
+    if (!productSellerIds.includes(currentUserId)) {
+      return res.redirect("/profile?error=You can edit only your own products.");
+    }
+
+    const name = req.body.name?.trim();
+    const description = req.body.description?.trim();
+    const price = Number(req.body.price);
+
+    if (!name || !description || isNaN(price) || price < 0) {
+      return res.redirect(`/edit/${req.params.productId}?error=Please enter valid product details.`);
+    }
+
+    foundProduct.name = name;
+    foundProduct.price = price;
+    foundProduct.description = description;
+    foundProduct.type = req.body.radio;
+
+    await foundProduct.save();
+    res.redirect("/profile?message=Product updated successfully.");
+  } catch (err) {
+    console.log(err);
+    res.redirect(`/edit/${req.params.productId}?error=Unable to update product.`);
   }
 });
 
@@ -265,7 +401,13 @@ app.get("/logout", function (req, res) {
 
 app.post("/signup", function (req, res) {
   User.register(
-    { username: req.body.username, name: req.body.fullname, contact: req.body.contact, email: req.body.username },
+    {
+      username: req.body.username,
+      name: req.body.fullname,
+      contact: req.body.contact,
+      email: req.body.username,
+      role: req.body.role || "customer",
+    },
     req.body.password,
     function (err, user) {
       if (err) {
@@ -324,28 +466,45 @@ app.post("/login", function (req, res) {
 // });
 
 app.post("/add", upload.single("image"), async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.redirect("/login");
+  }
+
   try {
-    //Upload image to cloudinary
-    //console.log(req.file);
+    if (!req.file) {
+      return res.redirect("/add?error=Please upload an image.");
+    }
+
+    const name = req.body.name?.trim();
+    const description = req.body.description?.trim();
+    const price = Number(req.body.price);
+
+    if (!name || !description || isNaN(price) || price < 0) {
+      return res.redirect("/add?error=Please enter valid product details.");
+    }
+
+    if (!req.user || req.user.role !== "seller") {
+      await User.findByIdAndUpdate(req.user._id, { role: "seller" });
+    }
+
     const result = await cloudinary.uploader.upload(req.file.path);
 
-    // Create new user
     let product = new Product({
-      name: req.body.name,
-      price: req.body.price,
-      description: req.body.description,
+      name: name,
+      price: price,
+      description: description,
       type: req.body.radio,
       seller: req.user._id,
       sellerName: req.user.name,
       image: result.secure_url,
       cloudinary_id: result.public_id,
     });
-    // Save user
+
     await product.save();
-    //res.json(product);
-    res.redirect("/category/All");
+    res.redirect("/profile?message=Product added successfully.");
   } catch (err) {
     console.log(err);
+    res.redirect("/add?error=Unable to add product.");
   }
 });
 

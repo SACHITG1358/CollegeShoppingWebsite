@@ -31,12 +31,12 @@
         }
       }
     </style>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="/css/styles.css">
   </head>
   <body class="text-center">
     <main class="form-signin">
   <form action="/signup" method="post">
-    <img class="mb-4" src="images/logo.png" alt="" width="200" >
+    <img class="mb-4" src="/images/logo.png" alt="" width="200" >
     <h1 class="h3 mb-3 fw-normal">Please Sign Up</h1>
 
     <div class="form-floating">
@@ -55,6 +55,19 @@
       <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password" required>
       <label for="floatingPassword">Password*</label>
     </div>
+
+    <div class="mt-3 mb-3 text-start">
+      <label class="form-label">Select role*</label>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="role" id="roleCustomer" value="customer" checked>
+        <label class="form-check-label" for="roleCustomer">Customer</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="role" id="roleSeller" value="seller">
+        <label class="form-check-label" for="roleSeller">Seller</label>
+      </div>
+    </div>
+
     <button class="w-100 btn btn-lg btn-success" type="submit">Create Account</button>
     <h1 class="lead py-1">OR</h1>
   </form>

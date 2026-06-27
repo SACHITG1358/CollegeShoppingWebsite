@@ -23,6 +23,12 @@
 </div>
 
 <div class="container px-5">
+  <% if (message) { %>
+    <div class="alert alert-success" role="alert"><%= message %></div>
+  <% } %>
+  <% if (error) { %>
+    <div class="alert alert-danger" role="alert"><%= error %></div>
+  <% } %>
   <p class="lead">Your posts:-</p>
 </div>
 
@@ -61,9 +67,38 @@
        </tr>
      </tbody>
    </table>
-   <a href="/delete/<%=product[i]._id%>"><button type="button" class="btn btn-danger me-2">Delete</button></a>
+   <a href="/edit/<%=product[i]._id%>"><button type="button" class="btn btn-outline-primary me-2">Edit</button></a>
+   <button type="button" class="btn btn-danger me-2 delete-btn" data-product-id="<%=product[i]._id%>">Delete</button>
    </div>
 <%}%>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".delete-btn").forEach(function (button) {
+      button.addEventListener("click", function () {
+        const productId = this.getAttribute("data-product-id");
+        if (!confirm("Are you sure you want to delete this product?")) {
+          return;
+        }
+
+        fetch(`/delete/${productId}`, {
+          method: "DELETE"
+        })
+          .then(function (response) {
+            return response.json().then(function (data) {
+              if (!response.ok) {
+                throw new Error(data.message || "Unable to delete product.");
+              }
+              window.location.href = "/profile?message=" + encodeURIComponent(data.message);
+            });
+          })
+          .catch(function (err) {
+            window.location.href = "/profile?error=" + encodeURIComponent(err.message);
+          });
+      });
+    });
+  });
+</script>
 
 
 
