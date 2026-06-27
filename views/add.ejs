@@ -1,6 +1,13 @@
 <%-include("partials/header")%>
 
 <div class="container py-5 px-5">
+  <% if (message) { %>
+    <div class="alert alert-success" role="alert"><%= message %></div>
+  <% } %>
+  <% if (error) { %>
+    <div class="alert alert-danger" role="alert"><%= error %></div>
+  <% } %>
+
   <form action="/add" method="post" enctype="multipart/form-data">
     <div class="mb-3">
       <label for="image" class="form-label">Upload image (File type should be jpg,jpeg or png)*</label>
